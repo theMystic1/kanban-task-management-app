@@ -90,7 +90,7 @@ function Delete({ name, type, close, board, id, onBoardDeleted }: deleteProps) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-grayy-200 text-sm">
-        Are you sure you want to delete '{decodeURIComponent(name)}' {type}?
+        Are you sure you want to delete {decodeURIComponent(name)} {type}?
       </p>
 
       <div className="grid grid-cols-2 items-center gap-4">
