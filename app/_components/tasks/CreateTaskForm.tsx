@@ -54,23 +54,23 @@ function CreateTaskForm({ close, type, task }: paramerer) {
   );
 
   const [open, setOpen] = useState(false);
-  const [board, setBoard] = React.useState<bordtype>({
+  const [boards, setBoards] = React.useState<bordtype>({
     columns: [],
     id: 0,
   });
-  const { boards } = useParams();
+  const { board } = useParams();
 
-  const boardName = typeof boards === "string" && decodeURIComponent(boards);
+  const boardName = typeof board === "string" && decodeURIComponent(board);
 
   useEffect(() => {
     async function getBoard() {
       const board = await getBoardByname(boardName);
-      setBoard(board);
+      setBoards(board);
     }
     getBoard();
   }, [boardName]);
 
-  const { columns, id } = board;
+  const { columns, id } = boards;
   const [col, setCol] = useState(columns[0]);
 
   const { register, handleSubmit, formState, setValue } = useForm<FormValues>();

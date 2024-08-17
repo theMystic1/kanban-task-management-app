@@ -7,6 +7,7 @@ import { useAside } from "@/app/_contexts/AsideContext";
 import { useDarkMode } from "@/app/_contexts/DarkModeContext";
 import React, { useEffect } from "react";
 import { getBoards } from "@/app/services/supabase/actions";
+import { useParams, usePathname } from "next/navigation";
 
 // Define the type for a single board
 export type Board = {
@@ -18,19 +19,31 @@ export type Board = {
 // Define the type for the list of boards
 export type Boards = Board[];
 
-function Main({ children }: Readonly<{ children: React.ReactNode }>) {
+type mainMain = {
+  children: React.ReactNode;
+  userId?: string;
+};
+
+function Main({ children, userId }: mainMain) {
   const { isClosed } = useAside();
   const { isDarkMode } = useDarkMode();
 
+  const { board } = useParams();
+
   const [loading, setLoading] = React.useState(false);
-  const [board, setBoard] = React.useState<Boards>([]);
+  const [boards, setBoards] = React.useState<Boards>([]);
+
+  const pathname = usePathname();
 
   useEffect(() => {
     async function fetchBoards() {
       setLoading(true);
       try {
         const boardData = await getBoards();
-        setBoard(boardData);
+
+        // if (!userId) return;
+        // const reqBoard = boardData.filter((bord) => bord.ownerId === userId);
+        setBoards(boardData);
       } catch (error: unknown) {
         console.error(error);
       } finally {
@@ -43,11 +56,11 @@ function Main({ children }: Readonly<{ children: React.ReactNode }>) {
 
   // Function to add a new board to the list
   const handleBoardCreated = (newBoard: Board) => {
-    setBoard((prevBoards) => [...prevBoards, newBoard]);
+    setBoards((prevBoards) => [...prevBoards, newBoard]);
   };
 
   const handleBoardDeleted = (deletedBoardId: number) => {
-    setBoard((prevBoard) =>
+    setBoards((prevBoard) =>
       prevBoard.filter((board) => board.id !== deletedBoardId)
     );
   };
@@ -59,12 +72,17 @@ function Main({ children }: Readonly<{ children: React.ReactNode }>) {
           isDarkMode ? "dark-mode" : "light-mode"
         }`}
       >
-        <Nav onBoardDeleted={handleBoardDeleted} />
-        <LeftNav
-          board={board}
-          loading={loading}
-          onBoardCreated={handleBoardCreated} // Pass the callback function
-        />
+        {pathname === "/login" ? null : (
+          <>
+            <Nav onBoardDeleted={handleBoardDeleted} />
+            <LeftNav
+              board={boards}
+              loading={loading}
+              onBoardCreated={handleBoardCreated} // Pass the callback function
+              userId={userId}
+            />
+          </>
+        )}
         {isClosed ? (
           <div className="absolute top-0 h-screen bottom-0 left-0 z-20">
             <HideSideBar />

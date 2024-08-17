@@ -15,6 +15,7 @@ import CreateTaskForm from "../tasks/CreateTaskForm";
 import Delete from "../tasks/Delete";
 import { getBoardByname } from "@/app/services/supabase/actions";
 import CreateBoard from "../tasks/CreateNewBoard";
+import SignOut from "../auth/SignOut";
 
 type task = {
   name: string;
@@ -37,7 +38,7 @@ type navProp = {
 
 function Nav({ onBoardDeleted }: navProp) {
   const pathname = usePathname();
-  const { boards } = useParams();
+  const param = useParams();
   const { isDarkMode } = useDarkMode();
   const [isOpenDeleteModal, setOpenDeleteModal] = React.useState(false);
 
@@ -60,7 +61,7 @@ function Nav({ onBoardDeleted }: navProp) {
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
-  const boardName = typeof boards === "string" ? boards : "";
+  const boardName = typeof param.board === "string" ? param.board : "";
 
   useEffect(() => {
     async function getBoard() {
@@ -113,6 +114,8 @@ function Nav({ onBoardDeleted }: navProp) {
           {decodeURIComponent(boardName)}
         </h1>
       </div>
+
+      <SignOut />
 
       <div className="flex items-center gap-4 relative">
         <Button type="primary" disabled={pathname === "/"} onClick={openModal}>

@@ -5,7 +5,11 @@ import { useDarkMode } from "@/app/_contexts/DarkModeContext";
 import React from "react";
 import { useForm } from "react-hook-form";
 import SpinnerMini from "../ui/SpinnerMini";
-import { createBoard, updateBoard } from "@/app/services/supabase/actions";
+import {
+  createBoard,
+  getUser,
+  updateBoard,
+} from "@/app/services/supabase/actions";
 import { usePathname } from "next/navigation";
 import { bordtype } from "../ui/Nav";
 
@@ -30,9 +34,21 @@ type bordprp = {
   type: string;
   board?: bordtype;
   onBoardCreated?: (updatedBoard: bordtype) => void;
+  userId?: string;
 };
 
-function CreateBoard({ close, type, board, onBoardCreated }: bordprp) {
+type userProp = {
+  email: string;
+  name: string;
+  image: string;
+};
+
+type sessionProp = {
+  user: userProp;
+  expires: string;
+};
+
+function CreateBoard({ close, type, board, onBoardCreated, userId }: bordprp) {
   const { isDarkMode } = useDarkMode();
   const [columns, setColumns] = React.useState<string[]>(
     type === "edit" && board ? board.columns : [""]
@@ -62,9 +78,15 @@ function CreateBoard({ close, type, board, onBoardCreated }: bordprp) {
   }
 
   async function onSubmit(data: dataObj) {
+    // const session = await auth();
+    // const curSession =
+    //   session != null ? session : ({} as { user?: { email?: string } });
+
+    // const curUser = await getUser(curSession.user?.email);
+
     if (type === "new") {
       const createdBoard = await createBoard(
-        { ...data, ownerId: "", tasks: [] },
+        { ...data, ownerId: userId, tasks: [] },
         pathname
       );
       if (onBoardCreated && createdBoard) {

@@ -1,38 +1,71 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import { User, Session, Account, Profile, NextAuthResult } from "next-auth";
+import { createUser, getUser, getUserById } from "./supabase/actions";
+import { cookies } from "next/headers";
 
-const authConfig = {
+type NextAuthOptions = {
+  providers: any[];
+  callbacks: {
+    authorized: (params: { auth: any; request: any }) => boolean;
+    signIn: (params: {
+      user: User;
+      account: Account | null;
+      profile?: Profile;
+    }) => Promise<boolean>;
+    // session: (params: { session: Session; user: User }) => Promise<Session>;
+  };
+  pages: {
+    signIn: string;
+  };
+};
+
+const authConfig: NextAuthOptions = {
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      scope: ["profile", "email"],
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
   ],
   callbacks: {
-    async signIn(user, account, profile, session, token) {
-      return {
-        ...session,
-        user,
-      };
+    authorized({ auth, request }) {
+      return !!auth?.user;
     },
-  },
-  session: {
-    strategy: "jwt",
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET,
-  },
-  callbacks: {
-    async jwt(token, user, account, profile, isNewUser) {
-      if (user) {
-        token.id = user.id;
+    async signIn({ user, account, profile }) {
+      try {
+        const userObJ = {
+          user_id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
+        const existingGuest = await getUser(user.email);
+        if (!existingGuest) {
+          await createUser(userObJ);
+        }
+
+        const cookie = cookies();
+        cookie.set("curuser", user.email ?? "", {
+          httpOnly: true,
+          path: "/",
+        });
+
+        return true;
+      } catch (error) {
+        console.error("SignIn Error:", error);
+
+        return false;
       }
-      return token;
     },
+  },
+  pages: {
+    signIn: "/login",
   },
 };
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [Google],
-});
+export const {
+  auth,
+  signIn,
+  signOut,
+  handlers: { GET, POST },
+} = NextAuth(authConfig);

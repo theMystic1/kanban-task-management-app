@@ -1,8 +1,18 @@
 import Home from "./_components/home/Home";
-import { getBoards } from "./services/supabase/actions";
+import { auth } from "./services/auth";
+import { getUser } from "./services/supabase/actions";
 
 async function page() {
-  await getBoards();
+  // type curUserProp = {
+  //   user_id: string;
+  //   email: string;
+  //   name: string;
+  // };
+  // const session = await auth();
+  // const curSession =
+  //   session != null ? session : ({} as { user?: { email?: string } });
+
+  // const curUser: curUserProp = await getUser(curSession.user?.email);
   return <Home />;
 }
 

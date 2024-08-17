@@ -26,11 +26,11 @@ type bordtype = {
   tasks: task[];
 };
 
-function Home() {
+function Home({ }) {
   const [isOpen, setIsOpen] = useState(false);
   const [fetch, setFetch] = useState(false);
 
-  const [board, setBoard] = useState<bordtype>({
+  const [boards, setBoards] = useState<bordtype>({
     columns: [],
     id: 0,
     name: "",
@@ -40,11 +40,11 @@ function Home() {
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
-  const { boards } = useParams();
+  const { board } = useParams();
 
   const { isClosed } = useAside();
 
-  const boardName = typeof boards === "string" && decodeURIComponent(boards);
+  const boardName = typeof board === "string" && decodeURIComponent(board);
 
   useEffect(() => {
     async function getBoard() {
@@ -52,7 +52,7 @@ function Home() {
       try {
         const data = await getBoardByname(boardName);
 
-        setBoard(data);
+        setBoards(data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -61,18 +61,18 @@ function Home() {
     }
 
     getBoard();
-  }, []);
+  }, [boardName]);
 
-  const firstCol = board?.tasks.filter(
-    (task) => task.status === board.columns[0]
+  const firstCol = boards?.tasks.filter(
+    (task) => task.status === boards.columns[0]
   );
 
-  const secondCol = board?.tasks.filter(
-    (task) => task.status === board.columns[1]
+  const secondCol = boards?.tasks.filter(
+    (task) => task.status === boards.columns[1]
   );
 
-  const thirdCol = board?.tasks.filter(
-    (task) => task.status === board.columns[2]
+  const thirdCol = boards?.tasks.filter(
+    (task) => task.status === boards.columns[2]
   );
 
   if (fetch)
@@ -84,34 +84,34 @@ function Home() {
   return (
     <div
       className={`h-full relative w-full flex ${
-        board?.tasks.length > 0 ? "" : "justify-center items-center"
+        boards?.tasks.length > 0 ? "" : "justify-center items-center"
       } flex-col gap-4 overflow-x-auto ${
         isClosed ? "pl-20" : "pl-60"
       } transition-all duration-700 py-6`}
     >
-      {board?.tasks.length > 0 ? (
+      {boards?.tasks.length > 0 ? (
         <GridBox>
           <GridRow>
-            <Column col={board?.columns[0]} i={1 + 0} />
+            <Column col={boards?.columns[0]} i={1 + 0} />
             {firstCol &&
               firstCol.map((task, i) => (
-                <TaskItem key={task.taskId} task={task} board={board} />
+                <TaskItem key={task.taskId} task={task} board={boards} />
               ))}
           </GridRow>
 
           <GridRow>
-            <Column col={board?.columns[1]} i={1 + 1} />
+            <Column col={boards?.columns[1]} i={1 + 1} />
             {secondCol &&
               secondCol.map((task, i) => (
-                <TaskItem key={task.taskId} task={task} board={board} />
+                <TaskItem key={task.taskId} task={task} board={boards} />
               ))}
           </GridRow>
           <GridRow>
-            <Column col={board?.columns[2]} i={1 + 2} />
+            <Column col={boards?.columns[2]} i={1 + 2} />
 
             {thirdCol &&
               thirdCol.map((task, i) => (
-                <TaskItem key={task.taskId} task={task} board={board} />
+                <TaskItem key={task.taskId} task={task} board={boards} />
               ))}
           </GridRow>
           <GridRow>

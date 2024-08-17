@@ -4,8 +4,12 @@ import { revalidatePath } from "next/cache";
 import { supabase } from "./supabase";
 import { dataObj } from "@/app/_components/tasks/CreateNewBoard";
 import { redirect } from "next/navigation";
+import { auth, signIn, signOut } from "../auth";
+import { cookies } from "next/headers";
 
 export async function createBoard(board: object, param: string) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
   const { data, error } = await supabase
     .from("boards")
     .insert([board])
@@ -18,13 +22,15 @@ export async function createBoard(board: object, param: string) {
 
   console.log(param);
   revalidatePath(param);
-  revalidatePath("/");
+  revalidatePath("/boards");
   // redirect(`/${data}`);
 
   return data;
 }
 
 export async function updateBoard(board: dataObj, boardId: number | undefined) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
   const { data, error } = await supabase
     .from("boards")
     .update(board)
@@ -35,14 +41,17 @@ export async function updateBoard(board: dataObj, boardId: number | undefined) {
     throw new Error(`Error updating boards: ${error.message}`);
   }
 
-  console.log(board.name);
-  revalidatePath(`/${board.name}`);
+  revalidatePath(`/boards/${board.name}`);
   return data;
 }
 
 export async function getBoards() {
+  // const cookie = cookies().get("curuser");
+  // Fetch all boards from the database
   const { data: boards, error } = await supabase.from("boards").select("*");
+  // .eq("ownerId", cookie?.value);
 
+  // Handle any errors that occurred during the fetch
   if (error) {
     console.error("Error fetching boards:", error);
     throw new Error(`Error fetching boards: ${error.message}`);
@@ -64,6 +73,8 @@ export async function getBoardByname(boardName: string | string[] | false) {
 }
 
 export async function addTaskToBoard(boardId: number, newTask: object) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
   // Fetch the current tasks
   const { data: board, error: fetchError } = await supabase
     .from("boards")
@@ -90,7 +101,7 @@ export async function addTaskToBoard(boardId: number, newTask: object) {
   } else {
     console.log("Task added successfully:", data);
   }
-  revalidatePath(`/${board.name}`);
+  revalidatePath(`/boards/${board.name}`);
 
   return data;
 }
@@ -104,6 +115,8 @@ type task = {
 };
 
 export async function editTask(boardId: number, taskId: string, newTask: task) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
   // Fetch the current tasks
   const { data: board, error: fetchError } = await supabase
     .from("boards")
@@ -143,11 +156,13 @@ export async function editTask(boardId: number, taskId: string, newTask: task) {
     console.log("Task updated successfully:", data);
   }
 
-  revalidatePath(`/${board.name}`);
+  revalidatePath(`/boards/${board.name}`);
   return data;
 }
 
 export async function deleteTask(boardId: number, taskId: string) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
   const { data: board, error: fetchError } = await supabase
     .from("boards")
     .select("tasks, name")
@@ -186,11 +201,13 @@ export async function deleteTask(boardId: number, taskId: string) {
     console.log("Task deleted successfully:", data);
   }
 
-  revalidatePath(`/${board.name}`);
+  revalidatePath(`/boards/${board.name}`);
   return data;
 }
 
 export async function deleteBoard(boardId: number) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in");
   const { error } = await supabase.from("boards").delete().eq("id", boardId);
 
   if (error) {
@@ -199,6 +216,65 @@ export async function deleteBoard(boardId: number) {
     console.log("Board deleted successfully");
   }
 
-  revalidatePath("/");
-  redirect("/");
+  revalidatePath("/boards");
+  redirect("/boards");
+}
+
+// USERS
+
+export async function getUserById(id: string | undefined) {
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("user_id", id)
+    .single();
+
+  return user;
+}
+
+export async function getUser(email: string | null | undefined) {
+  // if (!email) {
+  //   throw new Error("Email is required to fetch user data.");
+  // }
+
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", email)
+    .single();
+
+  // if (error) {
+  //   console.error("Error getting user:", error.message);
+  //   throw new Error(`Error getting user: ${error.message}`);
+  // }
+
+  return user;
+}
+
+type user = {
+  id: string | undefined;
+  email: string;
+  image: string;
+  name: string;
+  // emailVerified: boolean;
+};
+
+export async function createUser(user: object) {
+  const { data, error } = await supabase.from("users").insert([user]);
+
+  if (error) {
+    console.error("Error creating user:", error.message);
+    throw new Error(`Error creating user: ${error.message}`);
+  }
+
+  return data;
+}
+
+export async function signInAction() {
+  await signIn("google", { redirectTo: "/" });
+}
+
+export async function signOutAction() {
+  cookies().delete("curuser");
+  await signOut({ redirectTo: "/login" });
 }

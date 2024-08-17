@@ -28,35 +28,19 @@ type LeftNavProps = {
   board: Board[];
   loading: boolean;
   onBoardCreated: (newBoard: Board) => void; // Add this prop type
+  userId?: string;
 };
 
-function LeftNav({ board, loading }: LeftNavProps) {
+function LeftNavItem({ board, loading, onBoardCreated, userId }: LeftNavProps) {
   const { isClosed } = useAside();
   const params = useParams();
   const { isDarkMode } = useDarkMode();
   const [showModal, setShowModal] = React.useState(false);
-  const [boards, setBoards] = React.useState<Board[]>([]);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
   // Function to handle when a new board is created
-  const handleBoardCreated = (newBoard: Board) => {
-    setBoards((prevBoards) => [...prevBoards, newBoard]);
-  };
-
-  useEffect(() => {
-    async function fetchBoards() {
-      try {
-        const boardData = await getBoards();
-        setBoards(boardData);
-      } catch (error: unknown) {
-        console.error(error);
-      }
-    }
-
-    fetchBoards();
-  }, []);
 
   return (
     <aside
@@ -70,7 +54,8 @@ function LeftNav({ board, loading }: LeftNavProps) {
         <CreateBoard
           close={closeModal}
           type="new"
-          onBoardCreated={handleBoardCreated}
+          onBoardCreated={onBoardCreated}
+          userId={userId}
         />
       </Modal>
       <div>
@@ -79,21 +64,21 @@ function LeftNav({ board, loading }: LeftNavProps) {
           className="mx-4 mb-8"
         />
         <div className="flex flex-col gap-4">
-          <h1 className="text-grayy-200 p-4">All Boards ({boards?.length})</h1>
+          <h1 className="text-grayy-200 p-4">All Boards ({board?.length})</h1>
 
           {loading ? (
             <div className="h-full w-full items-center flex justify-center">
               <SpinnerMini />
             </div>
           ) : (
-            boards.map((bor: Board, index: number) => (
+            board.map((bor: Board, index: number) => (
               <Boards
                 key={bor.id}
                 board={bor}
                 active={
-                  typeof params.boards === "string" &&
+                  typeof params.board === "string" &&
                   bor.name.toLowerCase() ===
-                    decodeURIComponent(params.boards).toLowerCase()
+                    decodeURIComponent(params.board).toLowerCase()
                 }
               />
             ))
@@ -127,7 +112,7 @@ function Boards({ board, active }: BoardsProps) {
 
   return (
     <Link
-      href={`/${board.name}`}
+      href={`/boards/${board.name}`}
       className={`${
         active
           ? "bg-purpple-600 text-purpple-100"
@@ -150,4 +135,4 @@ function Boards({ board, active }: BoardsProps) {
   );
 }
 
-export default LeftNav;
+export default LeftNavItem;
