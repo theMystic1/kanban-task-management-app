@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .spinner {
+    margin: 3.2rem auto 1.6rem;
+    width: 60px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid theme("colors.purpple.600");
+    border-right-color: theme("colors.purpple.200");
+    animation: rotate 1s infinite linear;
+  }
+
+  .spinner-mini {
+    margin: 0;
+    width: 20px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid theme("colors.purpple.200");
+    border-right-color: transparent;
+    animation: rotate 1s infinite linear;
+  }
+
+  .dark-mode {
+    background-color: theme("colors.grayy.800");
+    color: theme("colors.white.0");
+  }
+  .light-mode {
+    background-color: theme("colors.purpple.200");
+    color: theme("colors.grayy.900");
+  }
+
+  .nav-dark-mode {
+    background-color: theme("colors.grayy.700");
+    color: theme("colors.white.0");
+  }
+
+  .nav-light-mode {
+    background-color: theme("colors.white.0");
+    color: theme("colors.grayy.800");
+  }
+
+  @keyframes rotate {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
