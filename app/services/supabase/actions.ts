@@ -201,7 +201,8 @@ export async function deleteTask(boardId: number, taskId: string) {
     console.log("Task deleted successfully:", data);
   }
 
-  revalidatePath(`/boards/${board.name}`);
+  revalidatePath(`/boards`);
+  redirect("/");
   return data;
 }
 

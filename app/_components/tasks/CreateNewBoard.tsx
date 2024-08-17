@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import SpinnerMini from "../ui/SpinnerMini";
 import {
   createBoard,
+  getBoardByname,
   getUser,
   updateBoard,
 } from "@/app/services/supabase/actions";
@@ -124,6 +125,10 @@ function CreateBoard({ close, type, board, onBoardCreated, userId }: bordprp) {
           } outline-none`}
           {...register("name", {
             required: "Can't be empty",
+            validate: async (value) => {
+              const isDuplicate = await getBoardByname(value);
+              return isDuplicate ? "Board name already exists" : true;
+            },
           })}
         />
       </Input>

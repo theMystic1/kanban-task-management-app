@@ -41,9 +41,9 @@ function Main({ children, userId }: mainMain) {
       try {
         const boardData = await getBoards();
 
-        // if (!userId) return;
-        // const reqBoard = boardData.filter((bord) => bord.ownerId === userId);
-        setBoards(boardData);
+        if (!userId) return;
+        const reqBoard = boardData.filter((bord) => bord.ownerId === userId);
+        setBoards(reqBoard);
       } catch (error: unknown) {
         console.error(error);
       } finally {
@@ -52,7 +52,7 @@ function Main({ children, userId }: mainMain) {
     }
 
     fetchBoards();
-  }, []);
+  }, [userId]);
 
   // Function to add a new board to the list
   const handleBoardCreated = (newBoard: Board) => {
