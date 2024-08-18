@@ -126,7 +126,7 @@ function Nav({ onBoardDeleted, handleMobileNav, openMobileNav }: navProp) {
           </span>
         </div>
         <button
-          className="text-xl flex gap-2 items-center md:hidden capitalize font-bold"
+          className="md:text-xl text-sm flex gap-2 items-center md:hidden capitalize font-bold"
           onClick={handleMobileNav}
         >
           {decodeURIComponent(boardName)}
