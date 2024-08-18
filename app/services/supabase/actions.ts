@@ -46,10 +46,12 @@ export async function updateBoard(board: dataObj, boardId: number | undefined) {
 }
 
 export async function getBoards() {
-  // const cookie = cookies().get("curuser");
+  const cookie = cookies().get("curuser");
   // Fetch all boards from the database
-  const { data: boards, error } = await supabase.from("boards").select("*");
-  // .eq("ownerId", cookie?.value);
+  const { data: boards, error } = await supabase
+    .from("boards")
+    .select("*")
+    .eq("ownerId", cookie?.value);
 
   // Handle any errors that occurred during the fetch
   if (error) {
@@ -102,7 +104,6 @@ export async function addTaskToBoard(boardId: number, newTask: object) {
     console.log("Task added successfully:", data);
   }
   revalidatePath(`/boards/${board.name}`);
-
   return data;
 }
 
@@ -157,6 +158,8 @@ export async function editTask(boardId: number, taskId: string, newTask: task) {
   }
 
   revalidatePath(`/boards/${board.name}`);
+  redirect(`/boards/${board.name}`);
+
   return data;
 }
 

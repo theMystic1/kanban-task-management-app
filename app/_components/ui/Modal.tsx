@@ -36,16 +36,16 @@ function Modal({ isOpen, onClose, title, children }: ModalProps) {
 
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 "
       onClick={onClose}
     >
       <div
-        className={`rounded-lg shadow-lg max-w-md w-full p-6 relative ${
+        className={`rounded-lg shadow-lg md:max-w-md max-w-[360px] w-full p-6 relative ${
           isDarkMode ? "nav-dark-mode" : "nav-light-mode"
-        }`}
+        } overflow-y-auto max-h-[600px] `}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 ">
           {title && (
             <h2
               className={`text-xl font-semibold ${

@@ -121,7 +121,7 @@ function CreateTaskForm({ close, type, task }: paramerer) {
   const btnName = type === "edit" ? "Edit Task" : "Create Task";
 
   return (
-    <form className="flex flex-col gap-4 w-full max-w-md">
+    <form className="flex flex-col gap-4 w-full max-w-md  overflow-y-auto">
       <Input label="Title" labelFor="title" needBoarder={false}>
         <input
           type="text"

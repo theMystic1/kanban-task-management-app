@@ -7,6 +7,13 @@ import editIcon from "@/public/assets/hammer-outline.svg";
 import trashIcon from "@/public/assets/trash-outline.svg";
 
 import icon from "@/public/assets/icon-vertical-ellipsis.svg";
+
+import crossIcon from "@/public/assets/icon-add-task-mobile.svg";
+
+import downChev from "@/public/assets/icon-chevron-down.svg";
+
+import upChev from "@/public/assets/icon-chevron-up.svg";
+
 import { useParams, usePathname } from "next/navigation";
 import { useDarkMode } from "@/app/_contexts/DarkModeContext";
 import React, { useEffect } from "react";
@@ -16,6 +23,7 @@ import Delete from "../tasks/Delete";
 import { getBoardByname } from "@/app/services/supabase/actions";
 import CreateBoard from "../tasks/CreateNewBoard";
 import SignOut from "../auth/SignOut";
+import { NavModal } from "./LeftNav";
 
 type task = {
   name: string;
@@ -34,9 +42,11 @@ export type bordtype = {
 
 type navProp = {
   onBoardDeleted: (id: number) => void;
+  handleMobileNav: () => void;
+  openMobileNav: boolean;
 };
 
-function Nav({ onBoardDeleted }: navProp) {
+function Nav({ onBoardDeleted, handleMobileNav, openMobileNav }: navProp) {
   const pathname = usePathname();
   const param = useParams();
   const { isDarkMode } = useDarkMode();
@@ -108,19 +118,56 @@ function Nav({ onBoardDeleted }: navProp) {
             isDarkMode ? "border-r-grayy-800" : "border-r-purpple-200 "
           } border-r-4 h-24 flex items-center pr-3`}
         >
-          <Logo type={isDarkMode ? "logolight" : "logoDark"} />
+          <span className="hidden md:flex">
+            <Logo type={isDarkMode ? "logolight" : "logoDark"} />
+          </span>
+          <span className="md:hidden">
+            <Logo type={"mobile"} />
+          </span>
         </div>
-        <h1 className="text-xl capitalize font-bold pl-8">
+        <button
+          className="text-xl flex gap-2 items-center md:hidden capitalize font-bold"
+          onClick={handleMobileNav}
+        >
+          {decodeURIComponent(boardName)}
+          <span className="relative w-5 h-4">
+            <Image
+              src={openMobileNav ? upChev : downChev}
+              fill
+              alt="Open image"
+            />
+          </span>
+        </button>
+
+        <h1 className="text-xl md:flex hidden capitalize font-bold pl-8">
           {decodeURIComponent(boardName)}
         </h1>
       </div>
 
-      <SignOut />
+      {/* <SignOut /> */}
 
       <div className="flex items-center gap-4 relative">
-        <Button type="primary" disabled={pathname === "/"} onClick={openModal}>
-          + Add new task
-        </Button>
+        <span className="hidden md:flex">
+          <Button
+            type="primary"
+            disabled={pathname === "/"}
+            onClick={openModal}
+          >
+            + Add new task
+          </Button>
+        </span>
+
+        <span className=" md:hidden">
+          <Button
+            type="primary"
+            disabled={pathname === "/"}
+            onClick={openModal}
+          >
+            <span className="relative w-5 h-5">
+              <Image src={crossIcon} fill alt="Mobile Icon" />
+            </span>
+          </Button>
+        </span>
         {isOpenMenu ? (
           <div
             className={`absolute ${
@@ -155,10 +202,12 @@ function Nav({ onBoardDeleted }: navProp) {
           </div>
         ) : null}
         <button
-          className="relative w-1 h-5"
+          className="w-5 h-8 hover:bg-purpple-200 rounded-md transition-all duration-500 flex items-center justify-center "
           onClick={() => setOpenMenu((is) => !is)}
         >
-          <Image src={icon} fill alt="Icon" />
+          <span className="w-1 h-5 relative">
+            <Image src={icon} fill alt="Icon" />
+          </span>
         </button>
       </div>
     </nav>

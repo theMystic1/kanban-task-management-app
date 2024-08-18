@@ -14,7 +14,7 @@ function Logo({ type = "", className = "" }: logoProps) {
     <Link href="/">
       <div
         className={`relative ${
-          type === "moble" ? "h-8 w-8" : " h-6 w-32"
+          type === "mobile" ? "h-8 w-8" : " h-6 w-32"
         } ${className}`}
       >
         <Image

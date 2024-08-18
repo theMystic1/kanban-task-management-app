@@ -15,7 +15,7 @@ function HideSideBar() {
         isClosed
           ? "w-20 rounded-r-full bottom-5 bg-purpple-600 absolute justify-center"
           : "items-center"
-      }`}
+      } md:flex hidden`}
       onClick={handleClosed}
     >
       <div className="relative h-5 w-6">

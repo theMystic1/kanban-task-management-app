@@ -10,7 +10,7 @@ function SignInButton() {
     >
       <Logo type="logoDark" />
       <h1 className="text-grayy-200">Task Management simplified</h1>
-      <button className="flex items-center gap-6 text-lg border border-purpple-600 px-10 py-4 font-medium">
+      <button className="flex items-center gap-6 text-lg border border-purpple-600 px-4 md:px-10 py-4 font-medium">
         <Image
           src="https://authjs.dev/img/providers/google.svg"
           alt="Google logo"

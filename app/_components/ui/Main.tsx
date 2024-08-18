@@ -1,6 +1,6 @@
 "use client";
 
-import LeftNav from "./LeftNav";
+import LeftNav, { NavModal } from "./LeftNav";
 import Nav from "./Nav";
 import HideSideBar from "./HideSideBar";
 import { useAside } from "@/app/_contexts/AsideContext";
@@ -32,6 +32,11 @@ function Main({ children, userId }: mainMain) {
 
   const [loading, setLoading] = React.useState(false);
   const [boards, setBoards] = React.useState<Boards>([]);
+  const [openMobileNav, setOpenMobileNav] = React.useState(false);
+
+  function handleMoileNav() {
+    setOpenMobileNav((op) => !op);
+  }
 
   const pathname = usePathname();
 
@@ -41,9 +46,9 @@ function Main({ children, userId }: mainMain) {
       try {
         const boardData = await getBoards();
 
-        if (!userId) return;
-        const reqBoard = boardData.filter((bord) => bord.ownerId === userId);
-        setBoards(reqBoard);
+        // if (!userId) return;
+        // const reqBoard = boardData.filter((bord) => bord.ownerId === userId);
+        setBoards(boardData);
       } catch (error: unknown) {
         console.error(error);
       } finally {
@@ -52,7 +57,7 @@ function Main({ children, userId }: mainMain) {
     }
 
     fetchBoards();
-  }, [userId]);
+  }, []);
 
   // Function to add a new board to the list
   const handleBoardCreated = (newBoard: Board) => {
@@ -74,13 +79,26 @@ function Main({ children, userId }: mainMain) {
       >
         {pathname === "/login" ? null : (
           <>
-            <Nav onBoardDeleted={handleBoardDeleted} />
+            <Nav
+              onBoardDeleted={handleBoardDeleted}
+              handleMobileNav={handleMoileNav}
+              openMobileNav={openMobileNav}
+            />
             <LeftNav
               board={boards}
               loading={loading}
               onBoardCreated={handleBoardCreated} // Pass the callback function
               userId={userId}
             />
+            {openMobileNav ? (
+              <NavModal
+                board={boards}
+                loading={loading}
+                onBoardCreated={handleBoardCreated}
+                openMobileNav={openMobileNav}
+                handleMobileNav={handleMoileNav}
+              />
+            ) : null}
           </>
         )}
         {isClosed ? (

@@ -4,7 +4,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import Button from "../ui/Button";
 import Modal from "../ui/Modal";
 import CreateTaskForm from "../tasks/CreateTaskForm";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { getBoardByname } from "@/app/services/supabase/actions";
 import { useDarkMode } from "@/app/_contexts/DarkModeContext";
 import { useAside } from "@/app/_contexts/AsideContext";
@@ -26,7 +26,7 @@ type bordtype = {
   tasks: task[];
 };
 
-function Home({ }) {
+function Home({}) {
   const [isOpen, setIsOpen] = useState(false);
   const [fetch, setFetch] = useState(false);
 
@@ -86,34 +86,40 @@ function Home({ }) {
       className={`h-full relative w-full flex ${
         boards?.tasks.length > 0 ? "" : "justify-center items-center"
       } flex-col gap-4 overflow-x-auto ${
-        isClosed ? "pl-20" : "pl-60"
+        isClosed ? "md:pl-20" : "md:pl-60"
       } transition-all duration-700 py-6`}
     >
       {boards?.tasks.length > 0 ? (
         <GridBox>
-          <GridRow>
-            <Column col={boards?.columns[0]} i={1 + 0} />
-            {firstCol &&
-              firstCol.map((task, i) => (
-                <TaskItem key={task.taskId} task={task} board={boards} />
-              ))}
-          </GridRow>
+          {boards.columns[0] && (
+            <GridRow>
+              <Column col={boards?.columns[0]} i={1 + 0} />
+              {firstCol &&
+                firstCol.map((task, i) => (
+                  <TaskItem key={task.taskId} task={task} board={boards} />
+                ))}
+            </GridRow>
+          )}
 
-          <GridRow>
-            <Column col={boards?.columns[1]} i={1 + 1} />
-            {secondCol &&
-              secondCol.map((task, i) => (
-                <TaskItem key={task.taskId} task={task} board={boards} />
-              ))}
-          </GridRow>
-          <GridRow>
-            <Column col={boards?.columns[2]} i={1 + 2} />
+          {boards.columns[1] && (
+            <GridRow>
+              <Column col={boards?.columns[1]} i={1 + 1} />
+              {secondCol &&
+                secondCol.map((task, i) => (
+                  <TaskItem key={task.taskId} task={task} board={boards} />
+                ))}
+            </GridRow>
+          )}
+          {boards.columns[2] && (
+            <GridRow>
+              <Column col={boards?.columns[2]} i={1 + 2} />
 
-            {thirdCol &&
-              thirdCol.map((task, i) => (
-                <TaskItem key={task.taskId} task={task} board={boards} />
-              ))}
-          </GridRow>
+              {thirdCol &&
+                thirdCol.map((task, i) => (
+                  <TaskItem key={task.taskId} task={task} board={boards} />
+                ))}
+            </GridRow>
+          )}
           <GridRow>
             <div className="w-full h-screen flex items-center flex-col justify-center">
               <EmptyBoard
@@ -151,6 +157,7 @@ type colu = {
 };
 
 function EmptyBoard({ isOpen, closeModal, openModal }: emptyBoard) {
+  const pathname = usePathname();
   return (
     <>
       <p className="text-grayy-200 text-center">
@@ -159,7 +166,7 @@ function EmptyBoard({ isOpen, closeModal, openModal }: emptyBoard) {
       <Modal isOpen={isOpen} onClose={closeModal} title="Add New Tasks">
         <CreateTaskForm close={closeModal} type="new" />
       </Modal>
-      <Button type="primary" onClick={openModal}>
+      <Button type="primary" disabled={pathname === "/"} onClick={openModal}>
         + Add new Task
       </Button>
     </>
@@ -174,7 +181,7 @@ function GridRow({ children }: gridProp) {
 
 function Column({ col, i }: colu) {
   return (
-    <div className="flex items-center gap-3  w-[400px]">
+    <div className="flex items-center gap-3  w-md:[400px] w-[360px]">
       <div
         className={`${
           i === 1 ? "bg-circle-1" : i === 2 ? "bg-circle-2" : "bg-circle-3"
@@ -199,7 +206,7 @@ function TaskItem({ task, board }: { task: task; board: bordtype }) {
     <div
       className={`${
         isDarkMode ? "nav-dark-mode" : "nav-light-mode"
-      }  min-h-24 shadow-xl flex flex-col justify-center gap-2 px-4 rounded-lg w-[400px] xl:w-full cursor-pointer`}
+      }  min-h-24 shadow-xl flex flex-col justify-center gap-2 px-4 rounded-lg w-[340px] md:w-[400px] xl:w-full cursor-pointer`}
       onClick={openModal}
     >
       <Modal onClose={closeModal} isOpen={isOpen} title="">
@@ -214,7 +221,7 @@ function TaskItem({ task, board }: { task: task; board: bordtype }) {
 
 function GridBox({ children }: gridProp) {
   return (
-    <div className="w-full grid grid-cols-[400px,400px,400px,400px] xl:grid-cols-4 gap-4 p-6">
+    <div className="w-full grid grid-cols-[340px,340px,340px,340px] md:grid-cols-[400px,400px,400px,400px] xl:grid-cols-4 gap-4 p-6">
       {children}
     </div>
   );
