@@ -202,7 +202,9 @@ function Nav({ onBoardDeleted, handleMobileNav, openMobileNav }: navProp) {
           </div>
         ) : null}
         <button
-          className="w-5 h-8 hover:bg-purpple-200 rounded-md transition-all duration-500 flex items-center justify-center "
+          className={`w-5 h-8 hover:bg-purpple-200 rounded-md transition-all duration-500 flex items-center justify-center ${
+            pathname === "/" ? "hidden" : "flex"
+          }`}
           onClick={() => setOpenMenu((is) => !is)}
         >
           <span className="w-1 h-5 relative">

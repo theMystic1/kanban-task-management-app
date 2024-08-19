@@ -58,9 +58,10 @@ function CreateTaskForm({ close, type, task }: paramerer) {
     columns: [],
     id: 0,
   });
-  const { board } = useParams();
+  const params = useParams();
 
-  const boardName = typeof board === "string" && decodeURIComponent(board);
+  const boardName =
+    typeof params.board === "string" && decodeURIComponent(params.board);
 
   useEffect(() => {
     async function getBoard() {
