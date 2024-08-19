@@ -97,6 +97,7 @@ function Main({ children, userId }: mainMain) {
                 onBoardCreated={handleBoardCreated}
                 openMobileNav={openMobileNav}
                 handleMobileNav={handleMoileNav}
+                userId={userId}
               />
             ) : null}
           </>
