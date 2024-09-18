@@ -63,6 +63,8 @@ export async function getBoards() {
 }
 
 export async function getBoardByname(boardName: string | string[] | false) {
+  const user = cookies().get("curuser");
+  if (!user) await signOutActionNoUser();
   const boards = await getBoards();
 
   const board = boards.find(
@@ -280,5 +282,8 @@ export async function signInAction() {
 
 export async function signOutAction() {
   cookies().delete("curuser");
+}
+
+export async function signOutActionNoUser() {
   await signOut({ redirectTo: "/login" });
 }

@@ -14,7 +14,7 @@ export async function generateMetadata({
   };
 }
 
-function page({ params }: pageProps) {
+async function page({ params }: pageProps) {
   return (
     <div className="h-[90%]">
       <Home />

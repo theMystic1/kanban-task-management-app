@@ -70,9 +70,8 @@ function CreateTaskForm({ close, type, task }: paramerer) {
     }
     getBoard();
   }, [boardName]);
-
-  const { columns, id } = boards;
-  const [col, setCol] = useState(columns[0]);
+  // const {  columns, id } = boards ;
+  const [col, setCol] = useState(boards?.columns[0]);
 
   const { register, handleSubmit, formState, setValue } = useForm<FormValues>();
   const { errors, isSubmitting } = formState;
@@ -105,16 +104,16 @@ function CreateTaskForm({ close, type, task }: paramerer) {
       name: data.name.trim(),
       description: data.description.trim(),
       subtasks: subtasks.filter(Boolean), // Filter out any empty subtasks
-      status: col ? col : columns[0],
+      status: col ? col : boards?.columns[0],
       taskId: type === "new" ? generateRandomId(6) : task?.taskId ?? "",
     };
 
     if (type === "new") {
-      await addTaskToBoard(id, dataObj);
+      await addTaskToBoard(boards?.id, dataObj);
     }
 
     if (type === "edit" && task) {
-      await editTask(id, task.taskId, dataObj);
+      await editTask(boards?.id, task.taskId, dataObj);
     }
     close();
   }
@@ -195,7 +194,7 @@ function CreateTaskForm({ close, type, task }: paramerer) {
           {type === "edit" && task ? (
             <p>{col ? col : task.status}</p>
           ) : (
-            <p className="">{col ? col : columns[0]}</p>
+            <p className="">{col ? col : boards?.columns[0]}</p>
           )}
 
           <div className="w-5 h-4 relative">
@@ -207,7 +206,7 @@ function CreateTaskForm({ close, type, task }: paramerer) {
                 isDarkMode ? "nav-dark-mode" : "nav-light-mode"
               } flex flex-col gap-3 items-start p-3 z-50 rounded-lg shadow-2xl`}
             >
-              {columns?.map((column, i) => (
+              {boards?.columns?.map((column, i) => (
                 <button
                   key={i}
                   className="text-grayy-200 p-2 w-full text-start"
